@@ -22,9 +22,7 @@ public class MinerService<T> : BackgroundService, IDisposable
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await _blockChain.MineBlock(_privateKey);
-            await Task.Delay(10);
-
+            await _blockChain.MineBlock(_privateKey).ConfigureAwait(false);
             stoppingToken.ThrowIfCancellationRequested();
         }
     }
