@@ -3,17 +3,10 @@ using Libplanet.Action;
 
 namespace PlanetNode.Action;
 
-public class PlanetAction : IAction
+public abstract class PlanetAction : IAction
 {
-    public IValue PlainValue => throw new NotImplementedException();
+    public abstract IValue PlainValue { get; }
 
-    public IAccountStateDelta Execute(IActionContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void LoadPlainValue(IValue plainValue)
-    {
-        throw new NotImplementedException();
-    }
+    public abstract IAccountStateDelta Execute(IActionContext context);
+    public abstract void LoadPlainValue(IValue plainValue);
 }

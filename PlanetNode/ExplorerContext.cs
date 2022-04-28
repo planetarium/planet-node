@@ -1,3 +1,4 @@
+using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Explorer.Interfaces;
 using Libplanet.Net;
@@ -6,13 +7,13 @@ using PlanetNode.Action;
 
 namespace PlanetNode;
 
-public class ExplorerContext : IBlockChainContext<PlanetAction>
+public class ExplorerContext : IBlockChainContext<PolymorphicAction<PlanetAction>>
 {
-    private readonly Swarm<PlanetAction> _swarm;
+    private readonly Swarm<PolymorphicAction<PlanetAction>> _swarm;
     public ExplorerContext(
-        BlockChain<PlanetAction> blockChain,
+        BlockChain<PolymorphicAction<PlanetAction>> blockChain,
         IStore store,
-        Swarm<PlanetAction> swarm
+        Swarm<PolymorphicAction<PlanetAction>> swarm
     )
     {
         BlockChain = blockChain;
@@ -22,7 +23,7 @@ public class ExplorerContext : IBlockChainContext<PlanetAction>
 
     public bool Preloaded => _swarm.Running;
 
-    public BlockChain<PlanetAction> BlockChain { get; private set; }
+    public BlockChain<PolymorphicAction<PlanetAction>> BlockChain { get; private set; }
 
     public IStore Store { get; private set; }
 }
