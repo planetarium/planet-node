@@ -22,7 +22,7 @@ public class ApplicationQuery : ObjectGraphType
                 var accountAddress = new Address(context.GetArgument<string>("address"));
                 FungibleAssetValue asset = blockChain.GetBalance(
                     accountAddress,
-                    new Currency("PNG", 18, default(Address?))
+                    Currencies.PlanetNodeGold
                 );
 
                 return asset.ToString();

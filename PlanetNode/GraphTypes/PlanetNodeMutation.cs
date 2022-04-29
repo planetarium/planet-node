@@ -33,7 +33,7 @@ public class PlanetNodeMutation : ObjectGraphType
                     privateKey.ToAddress(),
                     recipient,
                     FungibleAssetValue.Parse(
-                        new Currency("PNG", 18, default(Address?)),
+                        Currencies.PlanetNodeGold,
                         amount
                     )
                 );

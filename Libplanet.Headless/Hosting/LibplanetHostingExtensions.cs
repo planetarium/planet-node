@@ -14,7 +14,8 @@ public static class LibplanetServicesExtensions
 {
     public static IServiceCollection AddLibplanet<T>(
         this IServiceCollection services,
-        Configuration configuration)
+        Configuration configuration,
+        IEnumerable<T> genesisActions)
         where T : IAction, new()
     {
         services.AddSingleton<IBlockPolicy<T>>(
@@ -42,7 +43,10 @@ public static class LibplanetServicesExtensions
             }
             else
             {
-                return BlockChain<T>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
+                return BlockChain<T>.MakeGenesisBlock(
+                    HashAlgorithmType.Of<SHA256>(),
+                    genesisActions
+                );
             }
         });
         services.AddSingleton(provider =>

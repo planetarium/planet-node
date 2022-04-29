@@ -2,33 +2,40 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
-[ActionType(nameof(InitializeAssets))]
-public class InitializeAssets : PlanetAction
+[ActionType(nameof(InitializeStates))]
+public class InitializeStates : PlanetAction
 {
     private Dictionary<Address, FungibleAssetValue> _assets;
 
-    public InitializeAssets()
+    public InitializeStates()
     {
         _assets = new Dictionary<Address, FungibleAssetValue>();
     }
 
+    public InitializeStates(Dictionary<Address, FungibleAssetValue> assets)
+    {
+        _assets = assets;
+    }
+
     public override IValue PlainValue => new Dictionary(
         _assets.Select(kv => new KeyValuePair<IKey, IValue>(
-            (Binary)kv.Key.ToByteArray(),
-            new List()
-            {
-                kv.Value.Currency.Serialize(),
-                kv.Value.RawValue
-            }
+            (Binary)kv.Key.ToIValue(),
+            kv.Value.ToIValue()
         )
     ));
 
     public override IAccountStateDelta Execute(IActionContext context)
     {
         IAccountStateDelta? states = context.PreviousStates;
+
+        if (context.BlockIndex != 0)
+        {
+            return states;
+        }
 
         foreach ((Address address, FungibleAssetValue value) in _assets)
         {
@@ -45,11 +52,8 @@ public class InitializeAssets : PlanetAction
         _assets = new Dictionary<Address, FungibleAssetValue>(
             asDict.Select(kv =>
                 new KeyValuePair<Address, FungibleAssetValue>(
-                    new Address((Binary)kv.Key),
-                    FungibleAssetValue.FromRawValue(
-                        new Currency(((List)kv.Value)[0]),
-                        ((Integer)((List)kv.Value)[1]).Value
-                    )
+                    kv.Key.ToAddress(),
+                    kv.Value.ToFungibleAssetValue()
                 )
             )
         );

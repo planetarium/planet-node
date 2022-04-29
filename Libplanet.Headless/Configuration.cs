@@ -1,3 +1,5 @@
+using Libplanet.Action;
+
 namespace Libplanet.Headless;
 public class Configuration
 {
@@ -50,4 +52,6 @@ public class Configuration
     public int BucketSize { get; set; }
 
     public string[]? StaticPeerStrings { get; set; }
+
+    public IEnumerable<IAction>? GenesisActions { get; set; }
 }

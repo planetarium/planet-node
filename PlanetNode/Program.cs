@@ -11,6 +11,8 @@ using Libplanet.Explorer.Queries;
 using Libplanet.Headless;
 using Libplanet.Headless.Hosting;
 using System.Net;
+using Libplanet;
+using Libplanet.Assets;
 
 // Get configuration
 var configurationBuilder = new ConfigurationBuilder()
@@ -22,7 +24,18 @@ config.Bind(headlessConfig);
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddLibplanet<PolymorphicAction<PlanetAction>>(headlessConfig)
+    .AddLibplanet<PolymorphicAction<PlanetAction>>(
+        headlessConfig,
+        new PolymorphicAction<PlanetAction>[]
+        {
+            new InitializeStates(
+                new Dictionary<Address, FungibleAssetValue>
+                {
+                    [new Address("019101FEec7ed4f918D396827E1277DEda1e20D4")] = Currencies.PlanetNodeGold * 1000,
+                }
+            )
+        }
+    )
     .AddGraphQL(builder =>
     {
         builder
