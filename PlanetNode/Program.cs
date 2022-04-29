@@ -10,6 +10,7 @@ using Libplanet.Explorer.Interfaces;
 using Libplanet.Explorer.Queries;
 using Libplanet.Headless;
 using Libplanet.Headless.Hosting;
+using System.Net;
 
 // Get configuration
 var configurationBuilder = new ConfigurationBuilder()
@@ -33,6 +34,18 @@ builder.Services
     .AddSingleton<PlanetNodeMutation>()
     .AddSingleton<GraphQLHttpMiddleware<PlanetNodeSchema>>()
     .AddSingleton<IBlockChainContext<PolymorphicAction<PlanetAction>>, ExplorerContext>();
+
+if (
+    headlessConfig.GraphQLHost is { } graphqlHost &&
+    headlessConfig.GraphQLPort is { } graphqlPort
+)
+{
+    builder.WebHost
+        .ConfigureKestrel(options =>
+        {
+            options.Listen(IPAddress.Parse(graphqlHost), graphqlPort);
+        });
+}
 
 var app = builder.Build();
 app.UseGraphQL<PlanetNodeSchema>();
