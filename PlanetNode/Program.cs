@@ -28,9 +28,11 @@ builder.Services
         builder
             .AddSchema<PlanetNodeSchema>()
             .AddGraphTypes(typeof(ExplorerQuery<PolymorphicAction<PlanetAction>>).Assembly)
+            .AddGraphTypes(typeof(PlanetNodeQuery).Assembly)
             .AddSystemTextJson();
     })
     .AddSingleton<PlanetNodeSchema>()
+    .AddSingleton<PlanetNodeQuery>()
     .AddSingleton<PlanetNodeMutation>()
     .AddSingleton<GraphQLHttpMiddleware<PlanetNodeSchema>>()
     .AddSingleton<IBlockChainContext<PolymorphicAction<PlanetAction>>, ExplorerContext>();
