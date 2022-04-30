@@ -5,10 +5,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cocona" Version="2.0.3" />
     <PackageReference Include="GraphQL.Server.All" Version="6.0.0" />
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="6.0.0" />
-    <PackageReference Include="Libplanet" Version="0.33.0" />
-    <PackageReference Include="Libplanet.Explorer" Version="0.33.0" />
+    <PackageReference Include="Libplanet" Version="0.33.1" />
+    <PackageReference Include="Libplanet.Explorer" Version="0.33.1" />
+    <PackageReference Include="Libplanet.Extensions.Cocona" Version="0.33.1" />
   </ItemGroup>
 
   <PropertyGroup>
