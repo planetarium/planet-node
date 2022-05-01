@@ -12,10 +12,10 @@ public class MinerService<T> : BackgroundService, IDisposable
 
     private readonly PrivateKey _privateKey;
 
-    public MinerService(BlockChain<T> blockChain, Configuration configuration)
+    public MinerService(BlockChain<T> blockChain, PrivateKey minerPrivateKey)
     {
         _blockChain = blockChain;
-        _privateKey = PrivateKey.FromString(configuration.MinerPrivateKeyString);
+        _privateKey = minerPrivateKey;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

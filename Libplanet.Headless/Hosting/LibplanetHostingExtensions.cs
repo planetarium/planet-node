@@ -62,7 +62,16 @@ public static class LibplanetServicesExtensions
         services.AddSingleton<BlockChain<T>>();
         services.AddSingleton(_ => configuration);
         services.AddHostedService<SwarmService<T>>();
-        services.AddHostedService<MinerService<T>>();
+
+        if (configuration.MinerPrivateKeyString is { } minerPrivateKey)
+        {
+            services.AddHostedService(provider =>
+                new MinerService<T>(
+                    provider.GetRequiredService<BlockChain<T>>(),
+                    PrivateKey.FromString(minerPrivateKey)
+                )
+            );
+        }
 
         return services;
     }
