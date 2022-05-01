@@ -20,8 +20,8 @@ You need to install [.NET SDK] 6+. Read and follow the instruction to install
 Build
 -----
 
-```
-dotnet build
+```bash
+$ dotnet build
 ```
 
 TODO: Docker build
@@ -29,8 +29,8 @@ TODO: Docker build
 How to Run
 ----------
 
-```
-dotnet run --project PlanetNode
+```bash
+$ dotnet run --project PlanetNode
 ```
 
 ### About configuration
@@ -39,7 +39,7 @@ Currently, planet-node produces and uses storage and settings via
 change settings, please edit that files or set environment variables.
 
 ```
-PN_StorePath="/tmp/planet-node" dotnet run --project PlanetNode
+$ PN_StorePath="/tmp/planet-node" dotnet run --project PlanetNode
 ```
 
 ### GraphQL
@@ -79,6 +79,19 @@ Also, you can find supported GraphQL query in playground as like bellow.
 <img width="478" alt="image" src="https://user-images.githubusercontent.com/128436/165906186-fc361126-f8f8-456a-bd28-fca938e60be1.png">
 
 See the [Libplanet.Explorer] project for more details.
+Also, if you want to try scenario based tutorial, please check the `TUTORIAL.md`.
+
+Publish
+-------
+
+If you want to pack this project, use [`dotnet publish`][dotnet publish] as below.
+
+```bash
+$ dotnet publish -c Release --self-contained -r linux-x64
+$ ls -al PlanetNode/bin/Release/net6.0/linux-x64/publish/
+```
+
+[dotnet publish]: https://docs.microsoft.com/en-US/dotnet/core/tools/dotnet-publish
 
 [GraphQL]: https://graphql.org/
 [GraphQL Playground]: https://github.com/graphql/graphql-playground
