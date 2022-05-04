@@ -52,27 +52,30 @@ transactions.
 ```graphql
 query
 {
-  blockQuery
+  explorer
   {
-    blocks (limit: 10 desc: true)
+    blockQuery
     {
-      index
-      hash
-      timestamp
-
-      transactions
+      blocks (limit: 10 desc: true)
       {
-        id
-        actions
+        index
+        hash
+        timestamp
+
+        transactions
         {
-          inspection
+          id
+          actions
+          {
+            inspection
+          }
         }
       }
     }
   }
 }
 ```
-![image](https://user-images.githubusercontent.com/128436/165905463-3d9abe81-5642-40ee-820d-6cae3837095d.png)
+<img width="919" alt="image" src="https://user-images.githubusercontent.com/128436/166613127-de83fd1d-7087-477e-9636-259aaa71f360.png">
 
 Also, you can find supported GraphQL query in playground as like bellow.
 
