@@ -15,6 +15,7 @@ using Libplanet;
 using Libplanet.Assets;
 using Cocona;
 using Libplanet.Extensions.Cocona.Commands;
+using GraphQL.Server;
 
 var app = CoconaApp.Create();
 app.AddCommand(() =>
@@ -46,6 +47,7 @@ app.AddCommand(() =>
                 .AddSchema<PlanetNodeSchema>()
                 .AddGraphTypes(typeof(ExplorerQuery<PolymorphicAction<PlanetAction>>).Assembly)
                 .AddGraphTypes(typeof(PlanetNodeQuery).Assembly)
+                .AddUserContextBuilder<ExplorerContextBuilder>()
                 .AddSystemTextJson();
         })
         .AddCors()
