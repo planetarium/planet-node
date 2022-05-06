@@ -48,6 +48,7 @@ app.AddCommand(() =>
                 .AddGraphTypes(typeof(PlanetNodeQuery).Assembly)
                 .AddSystemTextJson();
         })
+        .AddCors()
         .AddSingleton<PlanetNodeSchema>()
         .AddSingleton<PlanetNodeQuery>()
         .AddSingleton<PlanetNodeMutation>()
@@ -66,12 +67,16 @@ app.AddCommand(() =>
             });
     }
     using WebApplication app = builder.Build();
-    app.UseGraphQL<PlanetNodeSchema>();
+    app.UseCors(builder =>
+    {
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
     app.UseRouting();
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapGraphQLPlayground();
     });
+    app.UseGraphQL<PlanetNodeSchema>();
 
     app.Run();
 });
