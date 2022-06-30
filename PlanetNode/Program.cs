@@ -29,7 +29,7 @@ app.AddCommand(() =>
     config.Bind(headlessConfig);
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
-        .AddLibplanet<PolymorphicAction<PlanetAction>>(
+        .AddLibplanet(
             headlessConfig,
             new PolymorphicAction<PlanetAction>[]
             {

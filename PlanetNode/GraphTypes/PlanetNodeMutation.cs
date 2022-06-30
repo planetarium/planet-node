@@ -1,4 +1,3 @@
-using System.Numerics;
 using GraphQL;
 using GraphQL.Types;
 using Libplanet;
@@ -7,6 +6,7 @@ using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Crypto;
 using Libplanet.Explorer.GraphTypes;
+using Libplanet.Explorer.Mutations;
 using PlanetNode.Action;
 
 namespace PlanetNode.GraphTypes;
@@ -15,6 +15,11 @@ public class PlanetNodeMutation : ObjectGraphType
 {
     public PlanetNodeMutation(BlockChain<PolymorphicAction<PlanetAction>> blockChain)
     {
+        Field<TransactionMutation<PolymorphicAction<PlanetAction>>>(
+            "transaction",
+            resolve: context => new { }
+        );
+
         Field<TransactionType<PolymorphicAction<PlanetAction>>>(
             "transferAsset",
             arguments: new QueryArguments(
