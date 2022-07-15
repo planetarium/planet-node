@@ -41,7 +41,7 @@ adjust it on `Program.cs` file.
                 new InitializeStates(
                     new Dictionary<Address, FungibleAssetValue>
                     {
-                        // Replace with your account address. (expect "0x")
+                        // Replace with your account address (no "0x" prefix).
                         // 1000 is mint amount.
                         [new Address("25924579F8f1D6a0edE9aa86F9522e44EbC74C26")] = Currencies.PlanetNodeGold * 1000,
                     }
