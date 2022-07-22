@@ -15,6 +15,10 @@ Building...
 Key ID Address
 ------ -------
 
+The key is stored in:
+Linux/macOS-'$HOME/.config/planetarium/keystore'
+Windows-'%AppData%\planetarium\keystore'
+
 $ dotnet run --project PlanetNode -- key create
 Building...
 Passphrase: *
