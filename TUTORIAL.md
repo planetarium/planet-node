@@ -25,6 +25,10 @@ Key ID                               Address
 0be94e73-63a3-4ef8-b727-fad383726728 0x25924579F8f1D6a0edE9aa86F9522e44EbC74C26
 ```
 
+The key is stored in:
+Linux/macOS-'$HOME/.config/planetarium/keystore'
+Windows-'%AppData%\planetarium\keystore'
+
 Adjusting Genesis Action
 ------------------------
 
