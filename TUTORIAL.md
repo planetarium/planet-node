@@ -56,6 +56,7 @@ Check the balance
 -----------------
 Minting proceeds automatically when the genesis block is created and executed. execute the node with the following command to check whether it has been successfully applied to the chain.
 
+in bash
 ```bash
 # chain will be stored under `/tmp/planet-node-chain` directory.
 $ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
@@ -70,6 +71,11 @@ info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: /home/longfin/planet-node/PlanetNode/
+```
+
+in PowerShell
+```
+$ $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
 ```
 
 Then, navigate to `http://localhost:38080/ui/playground` and type balance check query.
@@ -105,10 +111,15 @@ Private key                                                      Address
 As the name suggests, `key generate` command generates new private key for account. you can feed it to the `PN_MinerPrivateKeyString` environment variable or `appsettings.json` file.
 
 
-
+in bash
 ```
 $ export PN_StorePath=/tmp/planet-node-chain
 $ export PN_MinerPrivateKeyString=737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1
+```
+in PowerShell
+```
+$ $Env:PN_StorePath="/tmp/planet-node-chain"
+$ $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
 ```
 or
 ```json

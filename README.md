@@ -39,10 +39,14 @@ Currently, planet-node produces and uses storage and settings via
 `appsettings.json` and `PN_` prefixed environment variables. if you want to
 change settings, please edit that files or set environment variables.
 
+in bash
 ```
 $ PN_StorePath="/tmp/planet-node" dotnet run --project PlanetNode
 ```
-
+in PowerShell
+```
+$ $Env:PN_StorePath="/tmp/planet-node"; dotnet run --project PlanetNode
+```
 ### GraphQL
 planet-node runs [GraphQL] server and [GraphQL Playground] automatically.
 (backed by [GraphQL.NET]) you can check the current chain status on playground. (default endpoint is http://localhost:38080/ui/playground)
