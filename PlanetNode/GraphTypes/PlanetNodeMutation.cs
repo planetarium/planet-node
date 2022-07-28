@@ -17,15 +17,17 @@ public class PlanetNodeMutation : ObjectGraphType
     {
         Field<TransactionMutation<PolymorphicAction<PlanetAction>>>(
             "transaction",
+            description: "Adds transaction to the pending list so that a next Block to be mined may contain given transaction.",
             resolve: context => new { }
         );
 
         Field<TransactionType<PolymorphicAction<PlanetAction>>>(
             "transferAsset",
+            description: "Mutates a new transaction about transfer and stage the transaction.",
             arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "recipient" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "amount" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "privateKeyHex" }
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "recipient", Description = "Argument adress is the recipient's public key." },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "amount", Description = "Argument amount is transfer amount. The unit of transfer amount is PNG." },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "privateKeyHex", Description = "Argument privateKeyHex is the sender's hexadecimal private key used for signing." }
             ),
             resolve: context =>
             {
