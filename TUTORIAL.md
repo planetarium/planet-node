@@ -26,8 +26,8 @@ Key ID                               Address
 ```
 
 The key is stored in:  
-Linux/macOS-'$HOME/.config/planetarium/keystore'  
-Windows-'%AppData%\planetarium\keystore'  
+- Linux/macOS: '$HOME/.config/planetarium/keystore'  
+- Windows: '%AppData%\planetarium\keystore'  
 
 Adjusting Genesis Action
 ------------------------
@@ -60,8 +60,9 @@ Check the balance
 -----------------
 Minting proceeds automatically when the genesis block is created and executed. execute the node with the following command to check whether it has been successfully applied to the chain.
 
-in bash
-```bash
+In sh/bash/zsh (Linux or macOS):
+
+```sh
 # chain will be stored under `/tmp/planet-node-chain` directory.
 $ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
 Building...
@@ -77,9 +78,10 @@ info: Microsoft.Hosting.Lifetime[0]
       Content root path: /home/longfin/planet-node/PlanetNode/
 ```
 
-in PowerShell
+Or PowerShell (Windows):
+
 ```
-$ $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
+PS > $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
 ```
 
 Then, navigate to `http://localhost:38080/ui/playground` and type balance check query.
@@ -115,17 +117,22 @@ Private key                                                      Address
 As the name suggests, `key generate` command generates new private key for account. you can feed it to the `PN_MinerPrivateKeyString` environment variable or `appsettings.json` file.
 
 
-in bash
-```
+In sh/bash/zsh (Linux or macOS):
+
+```sh
 $ export PN_StorePath=/tmp/planet-node-chain
 $ export PN_MinerPrivateKeyString=737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1
 ```
-in PowerShell
+
+Or PowerShell (Windows):
+
+```pwsh
+PS > $Env:PN_StorePath="/tmp/planet-node-chain"
+PS > $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
 ```
-$ $Env:PN_StorePath="/tmp/planet-node-chain"
-$ $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
-```
-or
+
+Or `appsettings.json` file:
+
 ```json
 {
   "Logging": {
