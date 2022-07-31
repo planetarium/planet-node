@@ -24,7 +24,10 @@ public class PlanetNodeMutation : ObjectGraphType
 
         Field<TransactionType<PolymorphicAction<PlanetAction>>>(
             "transferAsset",
-            description: "Mutates a new transaction about transfer and stage the transaction.",
+            description: "Transfers the given amount of PNG from the account of the specified " +
+                "privateKeyHex to the specified recipient.  A made transaction is signed using " +
+                "the privateKeyHex and added to the pending list (and eventually included in " +
+                "one of the next blocks).",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>>
                 {
