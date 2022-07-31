@@ -4,13 +4,24 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
+using Libplanet.Net;
 using PlanetNode.Action;
 
 namespace PlanetNode.GraphTypes;
 
 public class ApplicationQuery : ObjectGraphType
 {
-    public ApplicationQuery(BlockChain<PolymorphicAction<PlanetAction>> blockChain)
+    private string getPeerString(Peer peer)
+    {
+        var pubKey = peer.PublicKey.ToString();
+        var hostAndPort = peer.ToString().Split('/')[1];
+        var host = hostAndPort.Split(':')[0];
+        var port = hostAndPort.Split(':')[1];
+        return $"{pubKey},{host},{port}";
+    }
+
+    public ApplicationQuery(BlockChain<PolymorphicAction<PlanetAction>> blockChain
+    , Swarm<PolymorphicAction<PlanetAction>> _swarm)
     {
         Field<StringGraphType>(
             "asset",
@@ -26,6 +37,16 @@ public class ApplicationQuery : ObjectGraphType
                 );
 
                 return asset.ToString();
+            }
+        );
+        Field<StringGraphType>(
+            "peerString",
+            resolve: context =>
+            {
+                var peer = _swarm.AsPeer;
+                var peerString = getPeerString(peer);
+
+                return peerString;
             }
         );
     }
