@@ -30,9 +30,9 @@ public class TransferAsset : PlanetAction
         {
             IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
             {
-                new KeyValuePair<IKey, IValue>((Text) nameof(Sender), Sender.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Recipient), Recipient.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Amount), Amount.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Sender), Sender.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Recipient), Recipient.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Amount), Amount.ToIValue()),
             };
 
             return new Dictionary(pairs);
