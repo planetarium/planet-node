@@ -1,6 +1,6 @@
 Tutorial
 ========
-This tutorial introduces introduces how to mint and send tokens on planet-node.
+This tutorial introduces how to mint and send tokens on planet-node.
 
 Creating Account
 ----------------
