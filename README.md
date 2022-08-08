@@ -25,7 +25,10 @@ $ git submodule update --init --recursive
 $ dotnet build
 ```
 
-TODO: Docker build
+If you want build docker, You can create a standalone image by running the command below.
+```bash
+$ docker build . -t <IMAGE_TAG>
+```
 
 How to Run
 ----------
