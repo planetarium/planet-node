@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using PlanetNode.Action;
 using PlanetNode.GraphTypes;
 using GraphQL.MicrosoftDI;
@@ -39,7 +40,8 @@ app.AddCommand(() =>
                         [new Address("019101FEec7ed4f918D396827E1277DEda1e20D4")] = Currencies.PlanetNodeGold * 1000,
                     }
                 )
-            }
+            },
+            ImmutableHashSet.Create(Currencies.PlanetNodeGold)
         )
         .AddGraphQL(builder =>
         {

@@ -20,6 +20,8 @@ public class PlanetNodeMutation : ObjectGraphType
             resolve: context => new { }
         );
 
+        // TODO: This mutation should be upstreamed to Libplanet.Explorer so that any native tokens
+        // can work together with this mutation:
         Field<TransactionType<PolymorphicAction<PlanetAction>>>(
             "transferAsset",
             arguments: new QueryArguments(

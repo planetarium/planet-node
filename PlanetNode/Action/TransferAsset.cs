@@ -6,6 +6,8 @@ using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
+// TODO: As PNG is now a native token, this action should be replaced by Libplanet's system action
+// Transfer.
 [ActionType(nameof(TransferAsset))]
 public class TransferAsset : PlanetAction
 {
