@@ -16,6 +16,7 @@ using Libplanet.Assets;
 using Cocona;
 using Libplanet.Extensions.Cocona.Commands;
 using GraphQL.Server;
+using Serilog;
 
 var app = CoconaApp.Create();
 app.AddCommand(() =>
@@ -27,8 +28,14 @@ app.AddCommand(() =>
         .AddJsonFile(configPath)
         .AddEnvironmentVariables("PN_");
     IConfiguration config = configurationBuilder.Build();
+    
+    var loggerConf = new LoggerConfiguration()
+       .ReadFrom.Configuration(config);
+    Log.Logger = loggerConf.CreateLogger();
+
     var headlessConfig = new Configuration();
     config.Bind(headlessConfig);
+
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
         .AddLibplanet(
