@@ -61,7 +61,16 @@ public static class LibplanetServicesExtensions
         });
         services.AddSingleton<BlockChain<T>>();
         services.AddSingleton(_ => configuration);
-        services.AddHostedService<SwarmService<T>>();
+
+        Peer[] peers = configuration.PeerStrings is { } ? configuration.PeerStrings.
+            Select(BoundPeer.ParsePeer).ToArray() : new Peer[] { };
+
+        services.AddHostedService(provider =>
+            new SwarmService<T>(
+                provider.GetRequiredService<Swarm<T>>(),
+                peers
+            )
+        );
 
         if (configuration.MinerPrivateKeyString is { } minerPrivateKey)
         {
