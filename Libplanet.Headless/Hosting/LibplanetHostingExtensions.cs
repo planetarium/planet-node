@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using System.Security.Cryptography;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -15,11 +17,13 @@ public static class LibplanetServicesExtensions
     public static IServiceCollection AddLibplanet<T>(
         this IServiceCollection services,
         Configuration configuration,
-        IEnumerable<T> genesisActions)
+        IEnumerable<T> genesisActions,
+        IImmutableSet<Currency> nativeTokens
+    )
         where T : IAction, new()
     {
         services.AddSingleton<IBlockPolicy<T>>(
-            _ => new BlockPolicy<T>()
+            _ => new BlockPolicy<T>(nativeTokens: nativeTokens)
         );
         services.AddSingleton<IStagePolicy<T>>(
             _ => new VolatileStagePolicy<T>()

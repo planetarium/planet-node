@@ -6,6 +6,8 @@ using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
+// TODO: As PNG is now a native token, this action should be replaced by Libplanet's system action
+// Transfer.
 [ActionType(nameof(TransferAsset))]
 public class TransferAsset : PlanetAction
 {
@@ -30,9 +32,9 @@ public class TransferAsset : PlanetAction
         {
             IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
             {
-                new KeyValuePair<IKey, IValue>((Text) nameof(Sender), Sender.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Recipient), Recipient.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Amount), Amount.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Sender), Sender.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Recipient), Recipient.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Amount), Amount.ToIValue()),
             };
 
             return new Dictionary(pairs);
