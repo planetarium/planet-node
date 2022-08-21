@@ -1,12 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Runtime.Serialization;
 using Libplanet;
+using System.Runtime.Serialization;
 
 namespace PlanetNode.Action;
 [Serializable]
-internal class InvalidTransferSignerException : Exception, ISerializable
+public class InvalidTransferSignerException : Exception, ISerializable
 {
     private readonly Address _signer;
     private readonly Address _sender;
