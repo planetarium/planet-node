@@ -17,6 +17,8 @@ public class PlanetNodeMutation : ObjectGraphType
     {
         Field<TransactionMutation<PolymorphicAction<PlanetAction>>>(
             "transaction",
+            description: "Adds a transaction to the pending list so that a next block to be " +
+                "mined may contain the given transaction.",
             resolve: context => new { }
         );
 
@@ -24,10 +26,27 @@ public class PlanetNodeMutation : ObjectGraphType
         // can work together with this mutation:
         Field<TransactionType<PolymorphicAction<PlanetAction>>>(
             "transferAsset",
+            description: "Transfers the given amount of PNG from the account of the specified " +
+                "privateKeyHex to the specified recipient.  A made transaction is signed using " +
+                "the privateKeyHex and added to the pending list (and eventually included in " +
+                "one of the next blocks).",
             arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "recipient" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "amount" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "privateKeyHex" }
+                new QueryArgument<NonNullGraphType<StringGraphType>>
+                {
+                	    Name = "recipient",
+                	    Description = "The recipient's 40-hex address.",
+                	},
+                new QueryArgument<NonNullGraphType<StringGraphType>>
+                {
+                	    Name = "amount",
+                	    Description = "The amount to transfer in PNG.",
+                	},
+                new QueryArgument<NonNullGraphType<StringGraphType>>
+                {
+                	    Name = "privateKeyHex",
+                	    Description = "A hex-encoded private key of the sender.  A made " +
+                	        "transaction will be signed using this key.",
+                	}
             ),
             resolve: context =>
             {
