@@ -12,6 +12,9 @@
     <PackageReference Include="Cocona" Version="2.0.3" />
     <PackageReference Include="GraphQL.Server.All" Version="6.0.0" />
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="6.0.0" />
+    <PackageReference Include="Serilog.Expressions" Version="3.4.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />   
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.42.0.51121">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

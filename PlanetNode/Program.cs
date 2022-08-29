@@ -22,12 +22,20 @@ var app = CoconaApp.Create();
 app.AddCommand(() =>
 {
     // Get configuration
+    string configPath = Environment.GetEnvironmentVariable("PN_CONFIG_FILE") ?? "appsettings.json";
+
     var configurationBuilder = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json")
+        .AddJsonFile(configPath)
         .AddEnvironmentVariables("PN_");
     IConfiguration config = configurationBuilder.Build();
+    
+    var loggerConf = new LoggerConfiguration()
+       .ReadFrom.Configuration(config);
+    Log.Logger = loggerConf.CreateLogger();
+
     var headlessConfig = new Configuration();
     config.Bind(headlessConfig);
+
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
         .AddLibplanet(
