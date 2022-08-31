@@ -5,5 +5,5 @@ namespace PlanetNode;
 
 public static class Currencies
 {
-    public static Currency PlanetNodeGold => new("PNG", 18, default(Address?));
+    public static Currency PlanetNodeGold => Currency.Uncapped("PNG", 18, null);
 }
