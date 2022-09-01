@@ -6,6 +6,11 @@ using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
+/// <summary>
+/// Basically, it's just a double of <see cref="Libplanet.Action.Sys.Tranfer"/>,
+/// a system built-in action.  Although it is redundant, it's here for
+/// an example of composing custom actions.
+/// </summary>
 [ActionType(nameof(TransferAsset))]
 public class TransferAsset : PlanetAction
 {

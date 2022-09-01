@@ -2,6 +2,7 @@ using GraphQL;
 using GraphQL.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Sys;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Crypto;
@@ -34,8 +35,7 @@ public class PlanetNodeMutation : ObjectGraphType
                 string privateKeyHex = context.GetArgument<string>("privateKeyHex");
 
                 PrivateKey privateKey = PrivateKey.FromString(privateKeyHex);
-                TransferAsset action = new TransferAsset(
-                    privateKey.ToAddress(),
+                var action = new Transfer(
                     recipient,
                     FungibleAssetValue.Parse(
                         Currencies.PlanetNodeGold,
@@ -43,10 +43,7 @@ public class PlanetNodeMutation : ObjectGraphType
                     )
                 );
 
-                return blockChain.MakeTransaction(
-                    privateKey,
-                    new PolymorphicAction<PlanetAction>[] { action }
-                );
+                return blockChain.MakeTransaction(privateKey, action);
             }
         );
     }
