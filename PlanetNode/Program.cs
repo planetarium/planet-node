@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using PlanetNode.Action;
 using PlanetNode.GraphTypes;
 using GraphQL.MicrosoftDI;
@@ -16,17 +17,26 @@ using Libplanet.Assets;
 using Cocona;
 using Libplanet.Extensions.Cocona.Commands;
 using GraphQL.Server;
+using Serilog;
 
 var app = CoconaApp.Create();
 app.AddCommand(() =>
 {
     // Get configuration
+    string configPath = Environment.GetEnvironmentVariable("PN_CONFIG_FILE") ?? "appsettings.json";
+
     var configurationBuilder = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json")
+        .AddJsonFile(configPath)
         .AddEnvironmentVariables("PN_");
     IConfiguration config = configurationBuilder.Build();
+    
+    var loggerConf = new LoggerConfiguration()
+       .ReadFrom.Configuration(config);
+    Log.Logger = loggerConf.CreateLogger();
+
     var headlessConfig = new Configuration();
     config.Bind(headlessConfig);
+
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
         .AddLibplanet(
@@ -39,7 +49,8 @@ app.AddCommand(() =>
                         [new Address("019101FEec7ed4f918D396827E1277DEda1e20D4")] = Currencies.PlanetNodeGold * 1000,
                     }
                 )
-            }
+            },
+            ImmutableHashSet.Create(Currencies.PlanetNodeGold)
         )
         .AddGraphQL(builder =>
         {
