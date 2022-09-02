@@ -6,8 +6,11 @@ using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
-// TODO: As PNG is now a native token, this action should be replaced by Libplanet's system action
-// Transfer.
+/// <summary>
+/// Basically, it's just a double of <see cref="Libplanet.Action.Sys.Tranfer"/>,
+/// a system built-in action.  Although it is redundant, it's here for
+/// an example of composing custom actions.
+/// </summary>
 [ActionType(nameof(TransferAsset))]
 public class TransferAsset : PlanetAction
 {

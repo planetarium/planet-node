@@ -43,14 +43,11 @@ public static class LibplanetServicesExtensions
                 store.CountIndex(cid) > 0)
             {
                 BlockHash genesisHash = store.IterateIndexes(cid, 0, 1).Single();
-                return store.GetBlock<T>(blockPolicy.GetHashAlgorithm, genesisHash);
+                return store.GetBlock<T>(genesisHash);
             }
             else
             {
-                return BlockChain<T>.MakeGenesisBlock(
-                    HashAlgorithmType.Of<SHA256>(),
-                    genesisActions
-                );
+                return BlockChain<T>.MakeGenesisBlock(genesisActions);
             }
         });
         services.AddSingleton(provider =>
