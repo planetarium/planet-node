@@ -26,7 +26,9 @@ public class TransferAsset : PlanetAction
     }
 
     public Address Sender { get; private set; }
+
     public Address Recipient { get; private set; }
+
     public FungibleAssetValue Amount { get; private set; }
 
     public override IValue PlainValue
