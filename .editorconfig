@@ -18,10 +18,19 @@ indent_style = space
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+end_of_line = lf
+max_line_length = 100
 
 [*.cs]
 indent_size = 4
 dotnet_sort_system_directives_first = true
+
+[*.csproj]
+quote_type = double
+
+[*.sln]
+indent_style = tab
+indent_size = 2
 
 # Don't use this. qualifier
 dotnet_style_qualification_for_field = false:suggestion
