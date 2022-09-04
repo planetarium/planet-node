@@ -11,7 +11,7 @@ namespace PlanetNode.GraphTypes;
 
 public class ApplicationQuery : ObjectGraphType
 {
-    private string getPeerString(Peer peer)
+    private string getPeerString(BoundPeer peer)
     {
         var pubKey = peer.PublicKey.ToString();
         var hostAndPort = peer.ToString().Split('/')[1];
