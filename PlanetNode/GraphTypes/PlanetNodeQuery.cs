@@ -14,6 +14,7 @@ public class PlanetNodeQuery : ObjectGraphType
             "explorer",
             resolve: context => new { }
         );
+
         // For compatibility with libplanet-explorer-frontend.
         Field<ExplorerQuery<PolymorphicAction<PlanetAction>>>(
             "chainQuery",

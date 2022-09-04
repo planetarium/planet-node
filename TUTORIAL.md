@@ -1,6 +1,6 @@
 Tutorial
 ========
-This tutorial introduces introduces how to mint and send tokens on planet-node.
+This tutorial introduces how to mint and send tokens on planet-node.
 
 Creating Account
 ----------------
@@ -24,6 +24,10 @@ Key ID                               Address
 ------------------------------------ ------------------------------------------
 0be94e73-63a3-4ef8-b727-fad383726728 0x25924579F8f1D6a0edE9aa86F9522e44EbC74C26
 ```
+
+The key is stored in:  
+- Linux/macOS: '$HOME/.config/planetarium/keystore'  
+- Windows: '%AppData%\planetarium\keystore'  
 
 Adjusting Genesis Action
 ------------------------
@@ -56,7 +60,9 @@ Check the balance
 -----------------
 Minting proceeds automatically when the genesis block is created and executed. execute the node with the following command to check whether it has been successfully applied to the chain.
 
-```bash
+In sh/bash/zsh (Linux or macOS):
+
+```sh
 # chain will be stored under `/tmp/planet-node-chain` directory.
 $ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
 Building...
@@ -70,6 +76,12 @@ info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: /home/longfin/planet-node/PlanetNode/
+```
+
+Or PowerShell (Windows):
+
+```
+PS > $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
 ```
 
 Then, navigate to `http://localhost:38080/ui/playground` and type balance check query.
@@ -105,12 +117,22 @@ Private key                                                      Address
 As the name suggests, `key generate` command generates new private key for account. you can feed it to the `PN_MinerPrivateKeyString` environment variable or `appsettings.json` file.
 
 
+In sh/bash/zsh (Linux or macOS):
 
-```
+```sh
 $ export PN_StorePath=/tmp/planet-node-chain
 $ export PN_MinerPrivateKeyString=737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1
 ```
-or
+
+Or PowerShell (Windows):
+
+```pwsh
+PS > $Env:PN_StorePath="/tmp/planet-node-chain"
+PS > $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
+```
+
+Or `appsettings.json` file:
+
 ```json
 {
   "Logging": {

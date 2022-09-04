@@ -10,6 +10,7 @@ namespace PlanetNode;
 public class ExplorerContext : IBlockChainContext<PolymorphicAction<PlanetAction>>
 {
     private readonly Swarm<PolymorphicAction<PlanetAction>> _swarm;
+
     public ExplorerContext(
         BlockChain<PolymorphicAction<PlanetAction>> blockChain,
         IStore store,

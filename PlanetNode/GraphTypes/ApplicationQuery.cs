@@ -25,8 +25,13 @@ public class ApplicationQuery : ObjectGraphType
     {
         Field<StringGraphType>(
             "asset",
+            description: "The specified address's balance in PNG.",
             arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "address" }
+                new QueryArgument<NonNullGraphType<StringGraphType>>
+                {
+                    Name = "address",
+                    Description = "The account holder's 40-hex address",
+                }
             ),
             resolve: context =>
             {

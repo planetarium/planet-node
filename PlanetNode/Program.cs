@@ -1,32 +1,41 @@
-using PlanetNode.Action;
-using PlanetNode.GraphTypes;
-using GraphQL.MicrosoftDI;
+using Cocona;
 using GraphQL;
+using GraphQL.MicrosoftDI;
+using GraphQL.Server;
 using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.SystemTextJson;
-using PlanetNode;
+using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Explorer.Interfaces;
 using Libplanet.Explorer.Queries;
+using Libplanet.Extensions.Cocona.Commands;
 using Libplanet.Headless;
 using Libplanet.Headless.Hosting;
+using PlanetNode;
+using PlanetNode.Action;
+using PlanetNode.GraphTypes;
+using System.Collections.Immutable;
 using System.Net;
-using Libplanet;
-using Libplanet.Assets;
-using Cocona;
-using Libplanet.Extensions.Cocona.Commands;
-using GraphQL.Server;
 
 var app = CoconaApp.Create();
 app.AddCommand(() =>
 {
     // Get configuration
+    string configPath = Environment.GetEnvironmentVariable("PN_CONFIG_FILE") ?? "appsettings.json";
+
     var configurationBuilder = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json")
+        .AddJsonFile(configPath)
         .AddEnvironmentVariables("PN_");
     IConfiguration config = configurationBuilder.Build();
+    
+    var loggerConf = new LoggerConfiguration()
+       .ReadFrom.Configuration(config);
+    Log.Logger = loggerConf.CreateLogger();
+
     var headlessConfig = new Configuration();
     config.Bind(headlessConfig);
+
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
         .AddLibplanet(
@@ -38,8 +47,9 @@ app.AddCommand(() =>
                     {
                         [new Address("019101FEec7ed4f918D396827E1277DEda1e20D4")] = Currencies.PlanetNodeGold * 1000,
                     }
-                )
-            }
+                ),
+            },
+            ImmutableHashSet.Create(Currencies.PlanetNodeGold)
         )
         .AddGraphQL(builder =>
         {
@@ -68,6 +78,7 @@ app.AddCommand(() =>
                 options.Listen(IPAddress.Parse(graphqlHost), graphqlPort);
             });
     }
+
     using WebApplication app = builder.Build();
     app.UseCors(builder =>
     {

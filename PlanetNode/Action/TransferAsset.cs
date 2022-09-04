@@ -6,6 +6,11 @@ using Libplanet.Headless.Extensions;
 
 namespace PlanetNode.Action;
 
+/// <summary>
+/// Basically, it's just a double of <see cref="Libplanet.Action.Sys.Tranfer"/>,
+/// a system built-in action.  Although it is redundant, it's here for
+/// an example of composing custom actions.
+/// </summary>
 [ActionType(nameof(TransferAsset))]
 public class TransferAsset : PlanetAction
 {
@@ -21,7 +26,9 @@ public class TransferAsset : PlanetAction
     }
 
     public Address Sender { get; private set; }
+
     public Address Recipient { get; private set; }
+
     public FungibleAssetValue Amount { get; private set; }
 
     public override IValue PlainValue
@@ -30,9 +37,9 @@ public class TransferAsset : PlanetAction
         {
             IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
             {
-                new KeyValuePair<IKey, IValue>((Text) nameof(Sender), Sender.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Recipient), Recipient.ToIValue()),
-                new KeyValuePair<IKey, IValue>((Text) nameof(Amount), Amount.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Sender), Sender.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Recipient), Recipient.ToIValue()),
+                new KeyValuePair<IKey, IValue>((Text)nameof(Amount), Amount.ToIValue()),
             };
 
             return new Dictionary(pairs);

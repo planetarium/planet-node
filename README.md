@@ -25,7 +25,10 @@ $ git submodule update --init --recursive
 $ dotnet build
 ```
 
-TODO: Docker build
+If you want build docker, You can create a standalone image by running the command below.
+```bash
+$ docker build . -t <IMAGE_TAG>
+```
 
 How to Run
 ----------
@@ -39,8 +42,16 @@ Currently, planet-node produces and uses storage and settings via
 `appsettings.json` and `PN_` prefixed environment variables. if you want to
 change settings, please edit that files or set environment variables.
 
-```
+In sh/bash/zsh (Linux or macOS):
+
+```sh
 $ PN_StorePath="/tmp/planet-node" dotnet run --project PlanetNode
+```
+
+Or PowerShell (Windows):
+
+```pwsh
+PS > $Env:PN_StorePath="/tmp/planet-node"; dotnet run --project PlanetNode
 ```
 
 ### GraphQL

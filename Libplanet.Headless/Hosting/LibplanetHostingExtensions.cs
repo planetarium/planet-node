@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using System.Security.Cryptography;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -15,11 +17,13 @@ public static class LibplanetServicesExtensions
     public static IServiceCollection AddLibplanet<T>(
         this IServiceCollection services,
         Configuration configuration,
-        IEnumerable<T> genesisActions)
+        IEnumerable<T> genesisActions,
+        IImmutableSet<Currency> nativeTokens
+    )
         where T : IAction, new()
     {
         services.AddSingleton<IBlockPolicy<T>>(
-            _ => new BlockPolicy<T>()
+            _ => new BlockPolicy<T>(nativeTokens: nativeTokens)
         );
         services.AddSingleton<IStagePolicy<T>>(
             _ => new VolatileStagePolicy<T>()
@@ -39,14 +43,11 @@ public static class LibplanetServicesExtensions
                 store.CountIndex(cid) > 0)
             {
                 BlockHash genesisHash = store.IterateIndexes(cid, 0, 1).Single();
-                return store.GetBlock<T>(blockPolicy.GetHashAlgorithm, genesisHash);
+                return store.GetBlock<T>(genesisHash);
             }
             else
             {
-                return BlockChain<T>.MakeGenesisBlock(
-                    HashAlgorithmType.Of<SHA256>(),
-                    genesisActions
-                );
+                return BlockChain<T>.MakeGenesisBlock(genesisActions);
             }
         });
         services.AddSingleton(provider =>
@@ -61,7 +62,16 @@ public static class LibplanetServicesExtensions
         });
         services.AddSingleton<BlockChain<T>>();
         services.AddSingleton(_ => configuration);
-        services.AddHostedService<SwarmService<T>>();
+
+        Peer[] peers = configuration.PeerStrings is { } ? configuration.PeerStrings.
+            Select(BoundPeer.ParsePeer).ToArray() : new Peer[] { };
+
+        services.AddHostedService(provider =>
+            new SwarmService<T>(
+                provider.GetRequiredService<Swarm<T>>(),
+                peers
+            )
+        );
 
         if (configuration.MinerPrivateKeyString is { } minerPrivateKey)
         {
