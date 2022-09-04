@@ -8,15 +8,15 @@ public class SwarmService<T> : BackgroundService, IDisposable
     where T : IAction, new()
 {
     private readonly Swarm<T> _swarm;
-    private readonly Peer[] _peers;
+    private readonly BoundPeer[] _peers;
 
-    public SwarmService(Swarm<T> swarm, Peer[] peers)
+    public SwarmService(Swarm<T> swarm, BoundPeer[] peers)
     {
         _swarm = swarm;
         _peers = peers;
     }
 
-    private string getPeerString(Peer peer)
+    private string getPeerString(BoundPeer peer)
     {
         var pubKey = peer.PublicKey.ToString();
         var hostAndPort = peer.ToString().Split('/')[1];

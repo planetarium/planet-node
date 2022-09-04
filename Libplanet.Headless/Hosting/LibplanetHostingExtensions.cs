@@ -63,8 +63,8 @@ public static class LibplanetServicesExtensions
         services.AddSingleton<BlockChain<T>>();
         services.AddSingleton(_ => configuration);
 
-        Peer[] peers = configuration.PeerStrings is { } ? configuration.PeerStrings.
-            Select(BoundPeer.ParsePeer).ToArray() : new Peer[] { };
+        BoundPeer[] peers = configuration.PeerStrings is { } ? configuration.PeerStrings.
+            Select(BoundPeer.ParsePeer).ToArray() : new BoundPeer[] { };
 
         services.AddHostedService(provider =>
             new SwarmService<T>(
