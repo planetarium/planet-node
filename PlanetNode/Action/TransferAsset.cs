@@ -50,6 +50,11 @@ public class TransferAsset : PlanetAction
     {
         IAccountStateDelta? state = context.PreviousStates;
 
+        if (context.Rehearsal)
+        {
+            return state;
+        }
+
         if (Sender != context.Signer)
         {
             throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
