@@ -230,10 +230,9 @@ In this section, we will learn how to send assets step-by-step with [pn-chrono],
 
 ### Prequirites
 
-First, you need to get the pn-chrono project. It is served on GitHub as well and you can check the detailed instruction to build and run on [README.md][pn-chrono's README][^1].
+First, you need to get the pn-chrono project. It is served on GitHub as well and you can check the detailed instruction to build and run on [README.md][pn-chrono's README].
 
-[pn-chrono's README]:https://github.com/planetarium/pn-chrono/blob/65559e6f5f0f179b8322a6088d0a0169e41fd5dc/README.md
-[^1]: should be replaced after https://github.com/planetarium/pn-chrono/pull/2
+[pn-chrono's README]: https://github.com/planetarium/pn-chrono/blob/0e25b226ae671de4d1b9f76570af1adbb3f8c6e3/README.md
 
 ### Import account
 
