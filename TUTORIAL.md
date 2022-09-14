@@ -222,15 +222,15 @@ query
 
 Transferring using wallet
 -------------------------
-In general, sending the private key is too dangerous because it can't be revoked and renewal. Instead, many blockchain network users prefer to directly sign their transactions with special software, also known as a "Crypto Wallet", and then send only the signed one.
+In general, sending and receiving an account private key is very dangerous because in case it is exposed, it can be used to gain complete access to the account, and it cannot be revoked or renewed. Instead, many blockchain network users prefer signing their transactions with special software (known as a "Crypto Wallet") and transmitting the signed transaction.
 
-In this section, we will learn how to send assets describe upon tasks with [pn-chrono], the sample crypto wallet software.
+In this section, we will learn how to send assets step-by-step with [pn-chrono], the sample crypto wallet software.
 
 [pn-chrono]: https://github.com/planetarium/pn-chrono
 
 ### Prequirites
 
-At first, you need to get pn-chrono projects. it also has been served on GitHub and you can check the detailed instruction to build and run on [README.md][pn-chrono's README][^1].
+First, you need to get the pn-chrono project. It is served on GitHub as well and you can check the detailed instruction to build and run on [README.md][pn-chrono's README][^1].
 
 [pn-chrono's README]:https://github.com/planetarium/pn-chrono/blob/65559e6f5f0f179b8322a6088d0a0169e41fd5dc/README.md
 [^1]: should be replaced after https://github.com/planetarium/pn-chrono/pull/2
@@ -241,7 +241,7 @@ At first, you need to get pn-chrono projects. it also has been served on GitHub 
 
     <img width="286" alt="image" src="https://user-images.githubusercontent.com/128436/189905396-25c586f0-a75e-443f-8bd4-2a77b8858c68.png">
 
-2. Click "New" tab and Create temporary account to proceed. (we don't use this account)
+2. Click on the "New" tab and Create a temporary account to proceed. (we don't use this account)
 
     <img width="298" alt="image" src="https://user-images.githubusercontent.com/128436/189906608-e1e5b0da-7737-4e8a-9eac-1a5d84b5903f.png">
 
@@ -253,7 +253,7 @@ At first, you need to get pn-chrono projects. it also has been served on GitHub 
 
     <img width="250" alt="image" src="https://user-images.githubusercontent.com/128436/189907053-fcb82f2f-6eb9-4cce-8f93-ff15196b304d.png">
 
-5. Check the address is same as displayed on `planet` CLI.
+5. Check if the address is the same as displayed on the `planet` CLI.
 
     <img width="256" alt="image" src="https://user-images.githubusercontent.com/128436/189907626-af72a817-bb0b-487c-ad47-c19882399083.png">
 
@@ -267,7 +267,7 @@ At first, you need to get pn-chrono projects. it also has been served on GitHub 
 
     <img width="281" alt="image" src="https://user-images.githubusercontent.com/128436/189910018-b81baa7c-8e24-4fbd-9b1e-f8d447cb4bbc.png">
 
-3. Check the transaction detail once again and Click "Transfer"
+3. Check the transaction detail once again and Click "Transfer".
 
     <img width="281" alt="image" src="https://user-images.githubusercontent.com/128436/189910227-3c671b1b-6bbe-4c71-9e8d-77e34ab34017.png">
 
