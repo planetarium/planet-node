@@ -271,3 +271,155 @@ First, you need to get the pn-chrono project. It is served on GitHub as well and
     <img width="281" alt="image" src="https://user-images.githubusercontent.com/128436/189910227-3c671b1b-6bbe-4c71-9e8d-77e34ab34017.png">
 
 4. Wait for the next block and check the balance.
+
+
+communicate between multiple nodes
+----------------
+
+### Check before you begin
+Please check the store address of root and peer before starting. PN_StorePath is the address of the store.
+
+
+> root node store path(PN_StorePath) : /tmp/planet-node-chain  
+peer node store path(PN_StorePath) : /tmp/planet-node-chain-a
+
+### 1. Excute root peer node
+```shell
+$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
+```
+### 2. Copy root chain for using same genesis block & Setting peer node chain
+```shell
+$ cp -r /tmp/planet-node-chain /tmp/planet-node-chain-a
+```
+> If you want to know if they want to have the same hash, see the code below.
+```cs
+// /planet-node/Libplanet.Headless/Hosting/SwarmService.cs
+protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+
+{
+
+ _ = _swarm.WaitForRunningAsync().ContinueWith(_ =>
+
+ {
+
+  var peer = _swarm.AsPeer;
+  var result = getPeerString(peer);
+  Console.WriteLine("Genesis hash: {0}", _swarm.BlockChain.Genesis.Hash); // use Console.WriteLine
+});
+
+ await _swarm.AddPeersAsync(_peers, default, cancellationToken: 
+ stoppingToken).ConfigureAwait(false);
+ await _swarm.PreloadAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
+ await _swarm.StartAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
+}
+```
+### 2. Copy `peerString` of root peer node & Paste to `PeerStrings` of `appsettings.peer.json`
+
+**Requesting a query through root node of you can see peerstring**  
+>rootNode GraphQL query | http://localhost:308080/ui/playground
+```graphql
+query{
+  application {
+    peerString
+  }
+}
+```
+```JSON
+//ex) query result
+{
+  "data": {
+    "application": {
+      "peerString": "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
+    }
+  }
+}
+```
+**When copying, exclude the last (`.`)**  
+X - 034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234.  
+O - 034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234
+```json
+// appsettings.peer.json
+{
+ ...
+ "PeerStrings": ["034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"],
+}
+```
+### 3. Excute peer node
+```shell
+$ PN_StorePath=/tmp/planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
+```
+### 4. Create transaction in peer node  & Check at root node
+```shell
+$ dotnet run --project PlanetNode -- key
+
+#Key ID                               Address                                   
+#------------------------------------ ------------------------------------------
+#b53ba868-4749-49d3-b2aa-2433a507370b 0x50129015Fa9F02AE2db055d4C675E42f5Ec82066
+#62ca49b2-999b-4459-a9a9-6fb64317864c 0xBc35F4797514e6f13736e6C6777BAea4764B0526
+#9f5a70fd-b9b2-415f-8ff2-eb64cc7629f7 0x917955C717b82801479e43732BD9b3c6710e5000
+#66aa63b4-048a-43f7-a747-e769bf861f36 0xBd04842e6Bee1b6399F143D2CeB65EAE8f7ee453
+
+$ dotnet run --project PlanetNode -- key export 62ca49b2-999b-4459-a9a9-6fb64317864c
+
+#Passphrase (of 62ca49b2-999b-4459-a9a9-6fb64317864c): 
+#543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae
+```
+
+> peerNode GraphQL Mutation | http://localhost:308081/ui/playground
+```graphql
+mutation
+{
+  transferAsset(
+    recipient: "917955C717b82801479e43732BD9b3c6710e5000"
+    amount: "50"
+    privateKeyHex: "543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae"
+  )
+  {
+    id
+  }
+}
+``` 
+```json
+// ex) mutation result
+{
+  "data": {
+    "transferAsset": {
+      "id": "d9a5d7638350f3b38cde81772f7bf147ac67a73b20893922ae89ddaeb52c246f"
+    }
+  }
+}
+```
+> rootNode GraphQL Query | http://localhost:308080/ui/playground
+```graphql
+query
+{
+  explorer
+  {
+    transactionQuery
+    {
+      transactionResult (txId:"d9a5d7638350f3b38cde81772f7bf147ac67a73b20893922ae89ddaeb52c246f")
+      {
+        txStatus
+        blockIndex
+        blockHash
+      }
+    }
+  }
+}
+```
+```json
+// ex) query result
+{
+  "data": {
+    "explorer": {
+      "transactionQuery": {
+        "transactionResult": {
+          "txStatus": "SUCCESS",
+          "blockIndex": 1554,
+          "blockHash": "4ecdb169992d8c15522845fd08368d32273042726ad83f8de70050d24404fbfe"
+        }
+      }
+    }
+  }
+}
+```
