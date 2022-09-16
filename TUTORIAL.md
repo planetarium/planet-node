@@ -77,7 +77,7 @@ info: Microsoft.Hosting.Lifetime[0]
       Content root path: /home/longfin/planet-node/PlanetNode/
 ```
 
-Or PowerShell (Windows):
+Or in PowerShell (Windows):
 
 ```
 PS > dotnet run --project PlanetNode
@@ -94,6 +94,7 @@ query
   }
 }
 ```
+
 <img width="960" alt="image" src="https://user-images.githubusercontent.com/128436/166153745-7707d3a4-ece8-4ce6-a9ef-38c430fce603.png">
 
 Transferring Assets
@@ -122,13 +123,13 @@ In sh/bash/zsh (Linux or macOS):
 $ export PN_MinerPrivateKeyString=737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1
 ```
 
-Or PowerShell (Windows):
+Or in PowerShell (Windows):
 
 ```pwsh
 PS > $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
 ```
 
-Or the `appsettings.json` file:
+Or in the `appsettings.json` file:
 
 ```json
 {
@@ -270,55 +271,61 @@ First, you need to get the pn-chrono project. It is served on GitHub as well and
 4. Wait for the next block and check the balance.
 
 
-Communicating between multiple nodes
-------------------------------------
+Going Multinode
+---------------
 
-### Before you begin
+One of the important features of a blockchain software to achieve decentralization is the ability to establish independent nodes and have them connect to each other, synchronizing the chain state. Libplanet offers the `Swarm<T>` class in Libplanet.Net package, which provides functionality to manage synchronization with peer nodes.
 
-Please check where the store of two nodes are located before starting. The location of a store for a node instance can be given as an environment variable PN_StorePath.
-We will be using the following paths:
+In this section, we learn how to run multiple instances of planet-node that are connected and synchronized with one another. For this purpose, we provide appsettings.peer.json to supply the example settings for the second node. For simplicity, we will enable mining only on the first node.
 
-> Location of the store for the first node: planet-node/PlanetNode/planet-node-chain
-> Location of the store for the second node: planet-node/PlanetNode/planet-node-chain-a
+### Copying the blockchain
 
-### Copying the store of the first node for the second node so that they share the common genesis block
-```shell
+First of all, every node of the same blockchain must share at least the genesis block. To achieve this, we will copy the planet-node directory which contains the chain on disk to the planet-node-a directory, which is designated as the store directory in appsettings.peer.json. (Note that when using `dotnet run`, all relative path is resolved relative to the project path, which in this case is the PlanetNode/ directory.) Assuming that you already have initialized the chain and enabled mining on the first node (stop the node first if it is running):
+
+In sh/bash/zsh (Linux or macOS):
+
+```sh
 $ cp -r PlanetNode/planet-node-chain{,-a}
 ```
 
-### Starting the first node
-```shell
+Or in PowerShell (Windows):
+
+```pwsh
+PS > Copy-Item -Path PlanetNode/planet-node-chain -Destination PlanetNode/planet-node-chain-a -recurse
+```
+
+### Acquiring the peer string
+
+For a node to be able to connect to other nodes, it should be aware about the whereabouts of at least a single node connected to the blockchain network. Oftentimes in blockchain networks, there exist some specialized nodes (called the seed nodes) with well-known addresses which provide convenient points for individual nodes to initiate a connection to the network. Since we're establishing ourselves a new blockchain network, we need to provide ourselves with a "seed node" that can be used for other nodes to connect to the network. The specification for a peer is represented with a "peer string", which we have to retrieve from our seed node. We're going to be using our miner node as the seed node, but note that any node exposed to the public network is eligible to be a seed node.
+
+There are currently two methods to retrieve the peer string: from the console log, and with a GraphQL query.
+
+#### Getting the peer string from the console log
+
+Start the miner node and watch the log for the peer string of the node. It should be near the beginning of the log:
+
+```sh
 $ dotnet run --project PlanetNode
 ```
 
-If you would like to verify that two nodes share the same genesis block, you might be able to modify the code so that the nodes output the hash string of the genesis block as below, in planet-node/Libplanet.Headless/Hosting/SwarmService.cs:
-
-```cs
-protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-
-{
-
- _ = _swarm.WaitForRunningAsync().ContinueWith(_ =>
-
- {
-
-  var peer = _swarm.AsPeer;
-  var result = getPeerString(peer);
-  Console.WriteLine("Genesis hash: {0}", _swarm.BlockChain.Genesis.Hash); // use Console.WriteLine
-});
-
- await _swarm.AddPeersAsync(_peers, default, cancellationToken: 
- stoppingToken).ConfigureAwait(false);
- await _swarm.PreloadAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
- await _swarm.StartAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
-}
+```
+[12:23:31 INF] [NetMQTransport] Listening on 31234...
+[12:23:31 DBG] [Swarm] Tip before preloading: #1387 374ff37ead1d1a5d0afb9686a9557256cdda627532261f937d3eda250c311f03
+[12:23:31 INF] [Swarm] Fetching excerpts from 0 peers...
+[12:23:31 INF] [Swarm] There are no appropriate peers for preloading.
+[12:23:31 DBG] [Swarm] Starting swarm...
+[12:23:31 DBG] [Swarm] Peer information : 0x558CfD1a5e8D87d1116e5798736b52B100EF46E3.Unspecified/localhost:31234.
+[12:23:31 DBG] [Swarm] Watching the BlockChain for tip changes...
+warn: Microsoft.AspNetCore.Server.Kestrel[0]
+      Overriding address(es) 'https://localhost:7040, http://localhost:5005'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+peerString: 035e91ac972827567226c3595b6cd942407ee64043b8760a72f2a051ebc6229d66,localhost,31234.
 ```
 
-### Copying the peer string of the first node and providing it to the `PeerStrings` array in `appsettings.peer.json`
+Here, `035e91ac972827567226c3595b6cd942407ee64043b8760a72f2a051ebc6229d66,localhost,31234` is the peer string. Notice that the trailing period is not included.
 
-**Querying the first node for the peer string** 
+#### Querying the node for the peer string
 
-Go the the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+Alternatively, you can query the node with GraphQL for the peer string. Start the miner node, go to the GraphQL Playground of the miner node at http://localhost:38080/ui/playground, and execute the query:
 
 ```graphql
 query{
@@ -328,74 +335,195 @@ query{
 }
 ```
 
-Example result:
+The node will return the peer string along the result, similar to the following:
+
 ```json
 {
   "data": {
     "application": {
-      "peerString": "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
+      "peerString": "035e91ac972827567226c3595b6cd942407ee64043b8760a72f2a051ebc6229d66,localhost,31234."
     }
   }
 }
 ```
 
-Please note that the trailing period must be removed:
-```
-Incorrect: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
-Correct: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"
-```
+Again, note that the trailing period is not a part of the peer string.
 
+### Supplying the peer string of the miner node to the second node
 
-In appsettings.peer.json:
+Now we provide the peer string to the `appsettings.peer.json` of the second node:
+
 ```json
 {
- // ...
- "PeerStrings": ["034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"],
- // ...
+  // ...
+  "PeerStrings": [
+    "035e91ac972827567226c3595b6cd942407ee64043b8760a72f2a051ebc6229d66,localhost,31234"
+  ],
+  // ...
 }
 ```
 
+Then, we can finally start the second node.
+
 ### Starting the second node
 
-```shell
-$ PN_StorePath=planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
+While the first node is still running, start the second node from a different terminal, providing planet-node with a path to the config file for the second node in PN_CONFIG_FILE environment variable (again, note that relative path is resolved relative to the project path \[PlanetNode/\] when using dotnet run):
+
+In sh/bash/zsh (Linux or macOS):
+
+```sh
+$ PN_CONFIG_FILE=appsettings.peer.json dotnet run --project PlanetNode
 ```
 
-### Creating a transaction in the second node & Checking in the first node
+Or in PowerShell (Windows):
 
-```shell
-$ dotnet run --project PlanetNode -- key
-
-#Key ID                               Address                                   
-#------------------------------------ ------------------------------------------
-#b53ba868-4749-49d3-b2aa-2433a507370b 0x50129015Fa9F02AE2db055d4C675E42f5Ec82066
-#62ca49b2-999b-4459-a9a9-6fb64317864c 0xBc35F4797514e6f13736e6C6777BAea4764B0526
-#9f5a70fd-b9b2-415f-8ff2-eb64cc7629f7 0x917955C717b82801479e43732BD9b3c6710e5000
-#66aa63b4-048a-43f7-a747-e769bf861f36 0xBd04842e6Bee1b6399F143D2CeB65EAE8f7ee453
-
-$ dotnet run --project PlanetNode -- key export 62ca49b2-999b-4459-a9a9-6fb64317864c
-
-#Passphrase (of 62ca49b2-999b-4459-a9a9-6fb64317864c): 
-#543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae
+```pwsh
+PS > $Env:PN_CONFIG_FILE="appsettings.peer.json"; dotnet run --project PlanetNode; Remove-Item Env:\PN_CONFIG_FILE
 ```
 
-Go to the GraphQL Playground of the second node at http://localhost:38081/ui/playground and execute the mutation:
+Now, on the console log of the second node that has just been set up, you will see some entries like the following:
+
+```
+[18:25:59 DBG] [NetMQTransport] Trying to send request Libplanet.Net.Messages.PingMsg 5a3090ae-937a-4d94-adb9-76865798796b to 0xBD465F970c201DFaeDA6de16E83724d8E04c1dDF.Unspecified/localhost:31234. with timeout null...
+[18:25:59 DBG] [NetMQTransport] Request Libplanet.Net.Messages.PingMsg 5a3090ae-937a-4d94-adb9-76865798796b sent to 0xBD465F970c201DFaeDA6de16E83724d8E04c1dDF.Unspecified/localhost:31234..
+[18:25:59 DBG] [NetMQTransport] A reply to request Libplanet.Net.Messages.PingMsg 5a3090ae-937a-4d94-adb9-76865798796b from 0x4F7e5F90E02Ad240637a57aF079c896E69884bCa.Unspecified/localhost:31234. has parsed: Libplanet.Net.Messages.PongMsg.
+[18:25:59 DBG] [NetMQTransport] Request Libplanet.Net.Messages.PingMsg 5a3090ae-937a-4d94-adb9-76865798796b with timeout 0ms processed in 144ms with 1 replies received out of 1 expected replies.
+[18:25:59 DBG] [NetMQTransport] Received 1 reply messages to 5a3090ae-937a-4d94-adb9-76865798796b from 0xBD465F970c201DFaeDA6de16E83724d8E04c1dDF.Unspecified/localhost:31234.: ["Libplanet.Net.Messages.PongMsg"].
+[18:25:59 DBG] [RoutingTable] Adding peer 0xBD465F970c201DFaeDA6de16E83724d8E04c1dDF.Unspecified/localhost:31234. to the routing table...
+```
+
+You can see here that the second node is pinging the miner node, and then adds the miner peer to the routing table after the miner peer responds in a pong message. Then, the second peer does the following:
+
+ * Requests for the chain status from the miner node
+ * Sees that it needs to catch up on the chain
+ * Asks for new blocks before starting to watch for changes in the chain ("preloading")
+ * Get the new block hashes and block content, and apply them to the current chain
+ * Execute the actions in the new blocks
+ * Then, starts the swarm and watch for tip changes in the chain.
+
+You can also see the miner node respond in a corresponding manner. Now the second node is up and running, and follows the changes in the chain as it moves forward.
+
+### Verifying if the second node is functional
+
+In appsettings.peer.json, the second node is set to use 38081/tcp port for the GraphQL server. We will query the two nodes for the same block to see if the nodes are in sync.
+
+Go to the GraphQL Playground of the miner node at http://localhost:38080/ui/playground, and query for the tip:
+
+```gql
+query
+{
+  explorer {
+    blockQuery {
+      blocks(desc: true, offset: 0, limit: 1)
+      {
+        hash
+        index
+      }
+    }
+  }
+}
+```
+
+It should respond in the following manner:
+
+```json
+{
+  "data": {
+    "explorer": {
+      "blockQuery": {
+        "blocks": [
+          {
+            "hash": "03eb151050efabe9436c12f45efa6e9a67da2d4be6a8870025001cb4fcba2618",
+            "index": 777
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+Take note of the block hash. Now, go to the GraphQL Playground in the second node at http://localhost:38081/ui/playground and query for the block that has the block hash:
+
+```gql
+query {
+  explorer {
+    blockQuery {
+   	  block(hash: "03eb151050efabe9436c12f45efa6e9a67da2d4be6a8870025001cb4fcba2618")
+      {
+        index
+      }
+    }
+  }
+}
+```
+
+You can see in the result that the block is on the same height in the second node as the miner node:
+
+```json
+{
+  "data": {
+    "explorer": {
+      "blockQuery": {
+        "block": {
+          "index": 777
+        }
+      }
+    }
+  }
+}
+```
+
+From these results, we can confirm that the second node is successfully running and receiving new blocks from the miner node.
+
+### Querying the chain on the second node
+
+As with the miner node, we can also query the second node for data on the chain. In the GraphQL Playground of the second node at http://localhost:38081/ui/playground:
+
+```gql
+query
+{
+  application
+  {
+    asset(address: "25924579F8f1D6a0edE9aa86F9522e44EbC74C26")
+  }
+}
+```
+
+You can see that it successfully retrieves the balance:
+
+```json
+{
+  "data": {
+    "application": {
+      "asset": "950 PNG"
+    }
+  }
+}
+```
+
+### Mutation on the second node
+
+Although the second node does not have the miner running, it should be able to broadcast the signed transaction to the miner node and have the transaction included in a block, changing the chain state. We can demonstrate this by initiating an asset transfer on the second node:
+
+On the GraphQL Playground of the second node at http://localhost:38081/ui/playground:
 
 ```graphql
 mutation
 {
   transferAsset(
-    recipient: "917955C717b82801479e43732BD9b3c6710e5000"
+    recipient: "A9Ce73B2B1EB603A10A6b50CF9f37fBa59e7a79A"
     amount: "50"
-    privateKeyHex: "543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae"
+    privateKeyHex: "924a03ecd4a56db981005d3338dfc78dfee673112aa95781b0a5d9668afe3ecd"
   )
   {
     id
   }
 }
-``` 
+```
 
-Example execution result of the mutation:
+In the result of this mutation, you can retrieve the transaction id.
+
 ```json
 {
   "data": {
@@ -406,7 +534,7 @@ Example execution result of the mutation:
 }
 ```
 
-Go to the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+To see if this transaction is successfully included in a block, query the second node for the transaction result for the transaction id:
 
 ```graphql
 query
@@ -426,7 +554,8 @@ query
 }
 ```
 
-Example result:
+If the transaction is in a block on the chain, it will respond in the following manner:
+
 ```json
 {
   "data": {
@@ -442,3 +571,29 @@ Example result:
   }
 }
 ```
+
+Now you can query the recipient's balance to see if the asset has been successfully transferred:
+
+```graphql
+query
+{
+  application
+  {
+    asset(address: "A9Ce73B2B1EB603A10A6b50CF9f37fBa59e7a79A")
+  }
+}
+```
+
+You will get a response like the following if the transfer was successfully made.
+
+```json
+{
+  "data": {
+    "application": {
+      "asset": "100 PNG"
+    }
+  }
+}
+```
+
+Now that we can see that the nodes are working in tandem, you can go crazy and try out other network structures by establishing other nodes and connecting them to each other!
