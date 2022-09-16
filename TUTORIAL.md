@@ -273,27 +273,30 @@ First, you need to get the pn-chrono project. It is served on GitHub as well and
 4. Wait for the next block and check the balance.
 
 
-communicate between multiple nodes
-----------------
+Communicating between multiple nodes
+------------------------------------
 
-### Check before you begin
-Please check the store address of root and peer before starting. PN_StorePath is the address of the store.
+### Before you begin
 
+Please check where the store of two nodes are located before starting. The location of a store for a node instance can be given as an environment variable PN_StorePath.
+We will be using the following paths:
 
-> root node store path(PN_StorePath) : /tmp/planet-node-chain  
-peer node store path(PN_StorePath) : /tmp/planet-node-chain-a
+> Location of the store for the first node: /tmp/planet-node-chain  
+> Location of the store for the second node: /tmp/planet-node-chain-a
 
-### 1. Excute root peer node
-```shell
-$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
-```
-### 2. Copy root chain for using same genesis block & Setting peer node chain
+### Copying the store of the first node for the second node so that they share the common genesis block
 ```shell
 $ cp -r /tmp/planet-node-chain /tmp/planet-node-chain-a
 ```
-> If you want to know if they want to have the same hash, see the code below.
+
+### Starting the first node
+```shell
+$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
+```
+
+If you would like to verify that two nodes share the same genesis block, you might be able to modify the code so that the nodes output the hash string of the genesis block as below, in planet-node/Libplanet.Headless/Hosting/SwarmService.cs:
+
 ```cs
-// /planet-node/Libplanet.Headless/Hosting/SwarmService.cs
 protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 
 {
@@ -313,10 +316,13 @@ protected override async Task ExecuteAsync(CancellationToken stoppingToken)
  await _swarm.StartAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
 }
 ```
-### 2. Copy `peerString` of root peer node & Paste to `PeerStrings` of `appsettings.peer.json`
 
-**Requesting a query through root node of you can see peerstring**  
->rootNode GraphQL query | http://localhost:308080/ui/playground
+### Copying the peer string of the first node and providing it to the `PeerStrings` array in `appsettings.peer.json`
+
+**Querying the first node for the peer string** 
+
+Go the the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+
 ```graphql
 query{
   application {
@@ -324,8 +330,9 @@ query{
   }
 }
 ```
-```JSON
-//ex) query result
+
+Example result:
+```json
 {
   "data": {
     "application": {
@@ -334,21 +341,31 @@ query{
   }
 }
 ```
-**When copying, exclude the last (`.`)**  
-X - 034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234.  
-O - 034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234
+
+Please note that the trailing period must be removed:
+```
+Incorrect: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
+Correct: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"
+```
+
+
+In appsettings.peer.json:
 ```json
-// appsettings.peer.json
 {
- ...
+ // ...
  "PeerStrings": ["034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"],
+ // ...
 }
 ```
-### 3. Excute peer node
+
+### Starting the second node
+
 ```shell
 $ PN_StorePath=/tmp/planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
 ```
-### 4. Create transaction in peer node  & Check at root node
+
+### Creating a transaction in the second node & Checking in the first node
+
 ```shell
 $ dotnet run --project PlanetNode -- key
 
@@ -365,7 +382,8 @@ $ dotnet run --project PlanetNode -- key export 62ca49b2-999b-4459-a9a9-6fb64317
 #543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae
 ```
 
-> peerNode GraphQL Mutation | http://localhost:308081/ui/playground
+Go to the GraphQL Playground of the second node at http://localhost:38081/ui/playground and execute the mutation:
+
 ```graphql
 mutation
 {
@@ -379,8 +397,9 @@ mutation
   }
 }
 ``` 
+
+Example execution result of the mutation:
 ```json
-// ex) mutation result
 {
   "data": {
     "transferAsset": {
@@ -389,7 +408,9 @@ mutation
   }
 }
 ```
-> rootNode GraphQL Query | http://localhost:308080/ui/playground
+
+Go to the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+
 ```graphql
 query
 {
@@ -407,8 +428,9 @@ query
   }
 }
 ```
+
+Example result:
 ```json
-// ex) query result
 {
   "data": {
     "explorer": {
