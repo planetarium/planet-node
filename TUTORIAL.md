@@ -5,8 +5,8 @@ This tutorial introduces how to mint and send tokens on planet-node.
 Creating Account
 ----------------
 
-Before testing, you need to create a keystore if you don't have.
-`planet-node` has sub-commands for this purpose.
+Before testing, you need to create a keystore if there isn't one.
+`planet-node` includes subcommands for this purpose.
 
 ```bash
 $ dotnet run --project PlanetNode -- key
@@ -26,15 +26,15 @@ Key ID                               Address
 ```
 
 The key is stored in:
-- Linux/macOS: '$HOME/.config/planetarium/keystore'
-- Windows: '%AppData%\planetarium\keystore'
+- Linux/macOS: `$HOME/.config/planetarium/keystore`
+- Windows: `%AppData%\planetarium\keystore`
 
-Adjusting Genesis Action
+Adjusting the Genesis Action
 ------------------------
 
-After creating key pair, you should add them to initial token distribution.
-Token distribution has been defined as `InitalizeStates` action and you can
-adjust it on `Program.cs` file.
+After creating the key pair, you should include them for the initial token distribution.
+The initial token distribution is done within the `InitalizeStates` action and you can
+adjust the token distribution scheme in `Program.cs`.
 
 ```csharp
     builder.Services
@@ -54,11 +54,11 @@ adjust it on `Program.cs` file.
         )
 ```
 
-Note: The `InitializeState` action is recorded in the genesis block and executed only once, so if the genesis was created by running planet-node before the change, you must delete the chain in the entire folder and start it for it to take effect.
+Note: The `InitializeState` action is recorded in the genesis block and is executed only once, so if there is already a genesis block created by running planet-node before a change was made in the token distribution scheme, you must delete the entire directory containing the chain and re-run planet-node for the new scheme to take place.
 
 Check the balance
 -----------------
-Minting proceeds automatically when the genesis block is created and executed. execute the node with the following command to check whether it has been successfully applied to the chain.
+Tokens that are included in the initial distribution scheme are minted automatically when the genesis block is created and executed. To verify that the genesis block generation and the token distribution has been successful, do the following:
 
 In sh/bash/zsh (Linux or macOS):
 
@@ -84,7 +84,7 @@ Or PowerShell (Windows):
 PS > $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
 ```
 
-Then, navigate to `http://localhost:38080/ui/playground` and type balance check query.
+Then, navigate to the GraphQL Playground at `http://localhost:38080/ui/playground` in a web browser and execute the following query to check the balance:
 
 ```gql
 query
@@ -97,14 +97,14 @@ query
 ```
 <img width="960" alt="image" src="https://user-images.githubusercontent.com/128436/166153745-7707d3a4-ece8-4ce6-a9ef-38c430fce603.png">
 
-Transferring
-------------
+Transferring Assets
+-------------------
 
 ### Enabling mining
 
-By default, planet-node doesn't start mining task(`MinerService<PlanetAction>`). to start the mining task, you need to feed different private key as miner key.
+By default, planet-node does not start the mining task (`MinerService<PlanetAction>`). To start the miner, you need to provide it with a private key.
 
-Execute bellow commands to generate new private key for miner.
+Execute the following commands to generate a new private key for the miner.
 
 ```bash
 $ dotnet run --project PlanetNode -- key generate
@@ -114,7 +114,7 @@ Private key                                                      Address
 737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1 0x4b2fA0Fdf369364550259A351531cf410f43C111
 ```
 
-As the name suggests, `key generate` command generates new private key for account. you can feed it to the `PN_MinerPrivateKeyString` environment variable or `appsettings.json` file.
+As the name suggests, the `key generate` command generates a private key for a new account. You can feed it to the miner through the `PN_MinerPrivateKeyString` environment variable or the `appsettings.json` file.
 
 
 In sh/bash/zsh (Linux or macOS):
@@ -131,7 +131,7 @@ PS > $Env:PN_StorePath="/tmp/planet-node-chain"
 PS > $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
 ```
 
-Or `appsettings.json` file:
+Or the `appsettings.json` file:
 
 ```json
 {
@@ -146,7 +146,7 @@ Or `appsettings.json` file:
 }
 ```
 
-### Creating another account (as recipient)
+### Creating another account (as the recipient)
 Now let's create another account to receive the tokens. Just use the `key create` command as we did before.
 
 ```bash
@@ -162,7 +162,7 @@ d8576720-c11a-44ab-9282-9661531f9438 0xA9Ce73B2B1EB603A10A6b50CF9f37fBa59e7a79A
 
 ### Execute mutation
 
-To transfer money through GraphQL, execute the `transferAsset()` mutation. `transferAsset()` requires for the recipient's address and amount, and the sender's private key.
+To transfer tokens through GraphQL, execute the `transferAsset()` mutation. `transferAsset()` asks for the recipient's address, the amount to transfer, and the sender's private key.
 
 ```graphql
 transferAsset(
@@ -172,7 +172,7 @@ transferAsset(
 ): Transaction
 ```
 
-To retreive private key for account(i.e. `25924579F8f1D6a0edE9aa86F9522e44EbC74C26`), use `key export` command.
+To retrieve the private key for the sending account(i.e. `25924579F8f1D6a0edE9aa86F9522e44EbC74C26`), use the `key export` command.
 
 ```bash
 # Check the Key ID for account
@@ -189,7 +189,7 @@ Passphrase (of 0be94e73-63a3-4ef8-b727-fad383726728): *
 924a03ecd4a56db981005d3338dfc78dfee673112aa95781b0a5d9668afe3ecd
 ```
 
-Then go to the graphql playground(`http://localhost:38080/ui/playground`) again, execute bellow mutation. (Make sure the node is running as miner)
+Then, go to the GraphQL Playground again (`http://localhost:38080/ui/playground`), and execute the following mutation. (Make sure the node is running as a miner)
 
 ```graphql
 mutation
@@ -206,7 +206,7 @@ mutation
 ```
 <img width="998" alt="image" src="https://user-images.githubusercontent.com/128436/166154488-47dd6056-a260-4667-9d4b-eb4a2acabf1a.png">
 
-After new blocks, you can check the balances.
+After a block is mined, you can check the balances.
 
 ```graphql
 query
@@ -222,13 +222,13 @@ query
 
 Transferring using wallet
 -------------------------
-In general, sending and receiving an account private key is very dangerous because in case it is exposed, it can be used to gain complete access to the account, and it cannot be revoked or renewed. Instead, many blockchain network users prefer signing their transactions with special software (known as a "Crypto Wallet") and transmitting the signed transaction.
+In the previous section, we provided the private key of the sending account along with the mutation to the GraphQL endpoint to conduct asset transfer. However, in general, transmitting an account private key to the outside world is very dangerous because in case it is exposed, it can be used to gain complete access to the account, and it cannot be revoked or renewed. Instead, many blockchain network users prefer signing their transactions with a special piece of software (known as a "Crypto Wallet") and transmitting the signed transaction.
 
 In this section, we will learn how to send assets step-by-step with [pn-chrono], the sample crypto wallet software.
 
 [pn-chrono]: https://github.com/planetarium/pn-chrono
 
-### Prequirites
+### Prerequisites
 
 First, you need to get the pn-chrono project. It is served on GitHub as well and you can check the detailed instruction to build and run on [README.md][pn-chrono's README].
 
