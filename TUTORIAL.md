@@ -63,8 +63,7 @@ Tokens that are included in the initial distribution scheme are minted automatic
 In sh/bash/zsh (Linux or macOS):
 
 ```sh
-# chain will be stored under `/tmp/planet-node-chain` directory.
-$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
+$ dotnet run --project PlanetNode
 Building...
 warn: Microsoft.AspNetCore.Server.Kestrel[0]
       Overriding address(es) 'https://localhost:7040, http://localhost:5005'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
@@ -81,7 +80,7 @@ info: Microsoft.Hosting.Lifetime[0]
 Or PowerShell (Windows):
 
 ```
-PS > $Env:PN_StorePath="/tmp/planet-node-chain"; dotnet run --project PlanetNode
+PS > dotnet run --project PlanetNode
 ```
 
 Then, navigate to the GraphQL Playground at `http://localhost:38080/ui/playground` in a web browser and execute the following query to check the balance:
@@ -120,14 +119,12 @@ As the name suggests, the `key generate` command generates a private key for a n
 In sh/bash/zsh (Linux or macOS):
 
 ```sh
-$ export PN_StorePath=/tmp/planet-node-chain
 $ export PN_MinerPrivateKeyString=737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1
 ```
 
 Or PowerShell (Windows):
 
 ```pwsh
-PS > $Env:PN_StorePath="/tmp/planet-node-chain"
 PS > $Env:PN_MinerPrivateKeyString="737b523d7d5594fabb1f37bbba712412034b02428568599ffec2ccc4a042ffc1"
 ```
 
@@ -281,17 +278,17 @@ Communicating between multiple nodes
 Please check where the store of two nodes are located before starting. The location of a store for a node instance can be given as an environment variable PN_StorePath.
 We will be using the following paths:
 
-> Location of the store for the first node: /tmp/planet-node-chain  
-> Location of the store for the second node: /tmp/planet-node-chain-a
+> Location of the store for the first node: planet-node/PlanetNode/planet-node-chain
+> Location of the store for the second node: planet-node/PlanetNode/planet-node-chain-a
 
 ### Copying the store of the first node for the second node so that they share the common genesis block
 ```shell
-$ cp -r /tmp/planet-node-chain /tmp/planet-node-chain-a
+$ cp -r PlanetNode/planet-node-chain{,-a}
 ```
 
 ### Starting the first node
 ```shell
-$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
+$ dotnet run --project PlanetNode
 ```
 
 If you would like to verify that two nodes share the same genesis block, you might be able to modify the code so that the nodes output the hash string of the genesis block as below, in planet-node/Libplanet.Headless/Hosting/SwarmService.cs:
@@ -361,7 +358,7 @@ In appsettings.peer.json:
 ### Starting the second node
 
 ```shell
-$ PN_StorePath=/tmp/planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
+$ PN_StorePath=planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
 ```
 
 ### Creating a transaction in the second node & Checking in the first node
