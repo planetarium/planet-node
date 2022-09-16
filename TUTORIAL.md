@@ -271,3 +271,177 @@ First, you need to get the pn-chrono project. It is served on GitHub as well and
     <img width="281" alt="image" src="https://user-images.githubusercontent.com/128436/189910227-3c671b1b-6bbe-4c71-9e8d-77e34ab34017.png">
 
 4. Wait for the next block and check the balance.
+
+
+Communicating between multiple nodes
+------------------------------------
+
+### Before you begin
+
+Please check where the store of two nodes are located before starting. The location of a store for a node instance can be given as an environment variable PN_StorePath.
+We will be using the following paths:
+
+> Location of the store for the first node: /tmp/planet-node-chain  
+> Location of the store for the second node: /tmp/planet-node-chain-a
+
+### Copying the store of the first node for the second node so that they share the common genesis block
+```shell
+$ cp -r /tmp/planet-node-chain /tmp/planet-node-chain-a
+```
+
+### Starting the first node
+```shell
+$ PN_StorePath=/tmp/planet-node-chain dotnet run --project PlanetNode
+```
+
+If you would like to verify that two nodes share the same genesis block, you might be able to modify the code so that the nodes output the hash string of the genesis block as below, in planet-node/Libplanet.Headless/Hosting/SwarmService.cs:
+
+```cs
+protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+
+{
+
+ _ = _swarm.WaitForRunningAsync().ContinueWith(_ =>
+
+ {
+
+  var peer = _swarm.AsPeer;
+  var result = getPeerString(peer);
+  Console.WriteLine("Genesis hash: {0}", _swarm.BlockChain.Genesis.Hash); // use Console.WriteLine
+});
+
+ await _swarm.AddPeersAsync(_peers, default, cancellationToken: 
+ stoppingToken).ConfigureAwait(false);
+ await _swarm.PreloadAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
+ await _swarm.StartAsync(cancellationToken: stoppingToken).ConfigureAwait(false);
+}
+```
+
+### Copying the peer string of the first node and providing it to the `PeerStrings` array in `appsettings.peer.json`
+
+**Querying the first node for the peer string** 
+
+Go the the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+
+```graphql
+query{
+  application {
+    peerString
+  }
+}
+```
+
+Example result:
+```json
+{
+  "data": {
+    "application": {
+      "peerString": "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
+    }
+  }
+}
+```
+
+Please note that the trailing period must be removed:
+```
+Incorrect: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234."
+Correct: "034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"
+```
+
+
+In appsettings.peer.json:
+```json
+{
+ // ...
+ "PeerStrings": ["034f11693177d1a3d7a20c10cf064fd89f82592cd8fd2b25bc8af2855878e831b9,localhost,31234"],
+ // ...
+}
+```
+
+### Starting the second node
+
+```shell
+$ PN_StorePath=/tmp/planet-node-chain-a PN_CONFIG_FILE=appsettings.peer.json  dotnet run --project PlanetNode
+```
+
+### Creating a transaction in the second node & Checking in the first node
+
+```shell
+$ dotnet run --project PlanetNode -- key
+
+#Key ID                               Address                                   
+#------------------------------------ ------------------------------------------
+#b53ba868-4749-49d3-b2aa-2433a507370b 0x50129015Fa9F02AE2db055d4C675E42f5Ec82066
+#62ca49b2-999b-4459-a9a9-6fb64317864c 0xBc35F4797514e6f13736e6C6777BAea4764B0526
+#9f5a70fd-b9b2-415f-8ff2-eb64cc7629f7 0x917955C717b82801479e43732BD9b3c6710e5000
+#66aa63b4-048a-43f7-a747-e769bf861f36 0xBd04842e6Bee1b6399F143D2CeB65EAE8f7ee453
+
+$ dotnet run --project PlanetNode -- key export 62ca49b2-999b-4459-a9a9-6fb64317864c
+
+#Passphrase (of 62ca49b2-999b-4459-a9a9-6fb64317864c): 
+#543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae
+```
+
+Go to the GraphQL Playground of the second node at http://localhost:38081/ui/playground and execute the mutation:
+
+```graphql
+mutation
+{
+  transferAsset(
+    recipient: "917955C717b82801479e43732BD9b3c6710e5000"
+    amount: "50"
+    privateKeyHex: "543140f03e7294eea41c67efbcca6f20c2f557e0a6101f8a6935ffc0aec9bcae"
+  )
+  {
+    id
+  }
+}
+``` 
+
+Example execution result of the mutation:
+```json
+{
+  "data": {
+    "transferAsset": {
+      "id": "d9a5d7638350f3b38cde81772f7bf147ac67a73b20893922ae89ddaeb52c246f"
+    }
+  }
+}
+```
+
+Go to the GraphQL Playground of the first node at http://localhost:38080/ui/playground and execute the query:
+
+```graphql
+query
+{
+  explorer
+  {
+    transactionQuery
+    {
+      transactionResult (txId:"d9a5d7638350f3b38cde81772f7bf147ac67a73b20893922ae89ddaeb52c246f")
+      {
+        txStatus
+        blockIndex
+        blockHash
+      }
+    }
+  }
+}
+```
+
+Example result:
+```json
+{
+  "data": {
+    "explorer": {
+      "transactionQuery": {
+        "transactionResult": {
+          "txStatus": "SUCCESS",
+          "blockIndex": 1554,
+          "blockHash": "4ecdb169992d8c15522845fd08368d32273042726ad83f8de70050d24404fbfe"
+        }
+      }
+    }
+  }
+}
+```
