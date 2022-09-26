@@ -9,6 +9,7 @@ using Libplanet.Crypto;
 using Libplanet.Explorer.GraphTypes;
 using Libplanet.Explorer.Mutations;
 using PlanetNode.Action;
+using System.Collections.Immutable;
 
 namespace PlanetNode.GraphTypes;
 
@@ -64,7 +65,12 @@ public class PlanetNodeMutation : ObjectGraphType
                     )
                 );
 
-                return blockChain.MakeTransaction(privateKey, action);
+                return blockChain.MakeTransaction(
+                    privateKey,
+                    action,
+                    ImmutableHashSet<Address>.Empty
+                        .Add(privateKey.ToAddress())
+                        .Add(recipient));
             }
         );
     }
