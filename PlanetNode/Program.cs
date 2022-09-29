@@ -20,6 +20,7 @@ using System.Collections.Immutable;
 using System.Net;
 
 var app = CoconaApp.Create();
+
 app.AddCommand(() =>
 {
     // Get configuration
@@ -29,7 +30,7 @@ app.AddCommand(() =>
         .AddJsonFile(configPath)
         .AddEnvironmentVariables("PN_");
     IConfiguration config = configurationBuilder.Build();
-    
+
     var loggerConf = new LoggerConfiguration()
        .ReadFrom.Configuration(config);
     Log.Logger = loggerConf.CreateLogger();
@@ -94,6 +95,7 @@ app.AddCommand(() =>
 
     app.Run();
 });
+
 app.AddSubCommand("key", x =>
 {
     x.AddCommands<KeyCommand>();
