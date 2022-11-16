@@ -44,3 +44,6 @@ UpgradeLog.htm
 *.svclog
 mono_crash.*.json
 mono_crash.*.blob
+
+# Files related planet node chain.
+planet-node-chain
