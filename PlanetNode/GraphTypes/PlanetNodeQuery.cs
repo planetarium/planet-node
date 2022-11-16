@@ -12,12 +12,14 @@ public class PlanetNodeQuery : ObjectGraphType
         Name = "PlanetNodeQuery";
         Field<ExplorerQuery<PolymorphicAction<PlanetAction>>>(
             "explorer",
+            deprecationReason: "Use /graphql/explorer endpoint.",
             resolve: context => new { }
         );
 
         // For compatibility with libplanet-explorer-frontend.
         Field<ExplorerQuery<PolymorphicAction<PlanetAction>>>(
             "chainQuery",
+            deprecationReason: "Use /graphql/explorer endpoint.",
             resolve: context => new { }
         );
         Field<ApplicationQuery>(
