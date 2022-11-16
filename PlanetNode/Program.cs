@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Explorer.Interfaces;
 using Libplanet.Explorer.Queries;
+using Libplanet.Explorer.Schemas;
 using Libplanet.Extensions.Cocona.Commands;
 using Libplanet.Headless;
 using Libplanet.Headless.Hosting;
@@ -18,6 +19,8 @@ using PlanetNode.GraphTypes;
 using Serilog;
 using System.Collections.Immutable;
 using System.Net;
+
+using PlanetExplorerSchema = Libplanet.Explorer.Schemas.LibplanetExplorerSchema<Libplanet.Action.PolymorphicAction<PlanetNode.Action.PlanetAction>>;
 
 var app = CoconaApp.Create();
 
@@ -57,6 +60,7 @@ app.AddCommand(() =>
         {
             builder
                 .AddSchema<PlanetNodeSchema>()
+                .AddSchema<PlanetExplorerSchema>()
                 .AddGraphTypes(typeof(ExplorerQuery<PolymorphicAction<PlanetAction>>).Assembly)
                 .AddGraphTypes(typeof(PlanetNodeQuery).Assembly)
                 .AddUserContextBuilder<ExplorerContextBuilder>()
@@ -67,6 +71,7 @@ app.AddCommand(() =>
         .AddSingleton<PlanetNodeQuery>()
         .AddSingleton<PlanetNodeMutation>()
         .AddSingleton<GraphQLHttpMiddleware<PlanetNodeSchema>>()
+        .AddSingleton<GraphQLHttpMiddleware<PlanetExplorerSchema>>()
         .AddSingleton<IBlockChainContext<PolymorphicAction<PlanetAction>>, ExplorerContext>();
 
     if (
@@ -92,6 +97,7 @@ app.AddCommand(() =>
         endpoints.MapGraphQLPlayground();
     });
     app.UseGraphQL<PlanetNodeSchema>();
+    app.UseGraphQL<PlanetExplorerSchema>("/graphql/explorer");
 
     app.Run();
 });
